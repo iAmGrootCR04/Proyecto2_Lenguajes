@@ -12,10 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->id();
-             $table->string('email')->unique();
-             $table->string('password');
-            $table->timestamps();
+            $table->id(); // @Id y @GeneratedValue(strategy = GenerationType.IDENTITY)
+            $table->string('username')->unique(); // nullable = false por defecto en Laravel
+            $table->string('password');
+            $table->string('email')->unique();
+            $table->string('role');
+            $table->string('full_name'); // @Column(name = "full_name")
+            $table->rememberToken(); // Recomendado para la autenticación en Laravel
+            $table->timestamps(); // Añade 'created_at' y 'updated_at' (Súper útil en Laravel)
         });
     }
 

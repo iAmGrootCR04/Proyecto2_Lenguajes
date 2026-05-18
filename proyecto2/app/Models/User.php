@@ -2,31 +2,53 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Loan; // Asegúrate de importar el modelo Loan
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Los atributos que se pueden asignar de forma masiva (Mass Assignment).
+     * Reemplaza a las propiedades de tu constructor en Java.
+     */
+    protected $fillable = [
+        'username',
+        'password',
+        'email',
+        'role',
+        'full_name',
+    ];
+
+    /**
+     * Los atributos que deben ocultarse para la serialización (como arrays o JSON).
+     * Esto equivale al @JsonIgnore de tu campo 'password' (y opcionalmente 'loans').
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Mutador automático para encriptar la contraseña.
+     * En Laravel, es buena práctica asegurar que el password siempre se guarde con hash.
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relación Uno a Muchos (@OneToMany(mappedBy = "user"))
+     * Un usuario tiene muchos préstamos (Loans).
+     */
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 }
